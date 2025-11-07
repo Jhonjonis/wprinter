@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}{% if produto %}Editar{% else %}Novo{% endif %} Produto - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary-custom text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-{% if produto %}edit{% else %}plus{% endif %} me-2"></i>
+                        {% if produto %}Editar{% else %}Novo{% endif %} Produto
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{% if produto %}{{ url_for('editar_produto', id=produto.id) }}{% else %}{{ url_for('novo_produto') }}{% endif %}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nome" class="form-label">Nome do Produto *</label>
+                                    <input type="text" class="form-control" id="nome" name="nome" 
+                                           value="{{ produto.nome if produto }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="preco" class="form-label">Preço (R$) *</label>
+                                    <input type="number" step="0.01" class="form-control" id="preco" name="preco" 
+                                           value="{{ "%.2f"|format(produto.preco) if produto else '0.00' }}" required>
+                                    <div class="form-text">Preço sempre cadastrado, mas só aparece para clientes quando o produto está em oferta</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição *</label>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="3" required>{{ produto.descricao if produto }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="imagem_url" class="form-label">URL da Imagem *</label>
+                            <input type="url" class="form-control" id="imagem_url" name="imagem_url" 
+                                   value="{{ produto.imagem_url if produto }}" required>
+                            <div class="form-text">Cole a URL de uma imagem do produto.</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="categoria" class="form-label">Categoria *</label>
+                                    <select class="form-select" id="categoria" name="categoria" required>
+                                        <option value="">Selecione uma categoria</option>
+                                        <option value="impressoras" {% if produto and produto.categoria == 'impressoras' %}selected{% endif %}>Impressoras</option>
+                                        <option value="scanners" {% if produto and produto.categoria == 'scanners' %}selected{% endif %}>Scanners</option>
+                                        <option value="multifuncionais" {% if produto and produto.categoria == 'multifuncionais' %}selected{% endif %}>Multifuncionais</option>
+                                        <option value="consumiveis" {% if produto and produto.categoria == 'consumiveis' %}selected{% endif %}>Consumíveis</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="caracteristicas" class="form-label">Características</label>
+                                    <textarea class="form-control" id="caracteristicas" name="caracteristicas" rows="2" 
+                                              placeholder="Separe cada característica com |">{{ produto.caracteristicas if produto }}</textarea>
+                                    <div class="form-text">Ex: Wi-Fi|Impressão colorida|Scanner integrado</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="em_oferta" name="em_oferta"
+                                               {% if produto and produto.em_oferta %}checked{% endif %}>
+                                        <label class="form-check-label fw-bold" for="em_oferta">
+                                            <i class="fas fa-tag me-1"></i> Produto em oferta
+                                        </label>
+                                    </div>
+                                    <div class="form-text text-success">
+                                        <small><i class="fas fa-info-circle me-1"></i> Quando marcado, o preço será visível para os clientes</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                {% if produto %}
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="ativo" name="ativo"
+                                               {% if produto.ativo %}checked{% endif %}>
+                                        <label class="form-check-label" for="ativo">
+                                            Produto ativo
+                                        </label>
+                                    </div>
+                                    <div class="form-text">
+                                        <small>Produtos inativos não aparecem para clientes</small>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Seção de Informações -->
+                        <div class="alert alert-info mt-4">
+                            <h6><i class="fas fa-lightbulb me-2"></i>Como funciona:</h6>
+                            <ul class="mb-0 small">
+                                <li><strong>Preço sempre cadastrado</strong> - Todos os produtos têm preço no sistema</li>
+                                <li><strong>Oferta = Preço visível</strong> - Clientes só veem preço se "Produto em oferta" estiver marcado</li>
+                                <li><strong>Sem oferta = "Preço sob consulta"</strong> - Clientes solicitam orçamento</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('admin') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Voltar
+                            </a>
+                            <button type="submit" class="btn btn-primary-custom">
+                                <i class="fas fa-save me-1"></i>
+                                {% if produto %}Atualizar{% else %}Criar{% endif %} Produto
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Meus Pacotes - TechOutsourcing{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary-custom">
+            <i class="fas fa-cube me-2"></i>Meus Pacotes Solicitados
+        </h2>
+        <a href="{{ url_for('solicitar_pacote') }}" class="btn btn-primary-custom">
+            <i class="fas fa-plus me-1"></i> Novo Pacote
+        </a>
+    </div>
+
+    {% if pacotes %}
+    <div class="row">
+        {% for pacote in pacotes %}
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Pacote #{{ pacote.id }}</h5>
+                    <span class="badge {% if pacote.status == 'proposto' %}bg-success{% elif pacote.status == 'pendente' %}bg-warning{% else %}bg-secondary{% endif %}">
+                        {{ pacote.status|title }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <small class="text-muted">Volume:</small>
+                            <p class="mb-0 fw-bold">{{ pacote.volume_folhas }} folhas/mês</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Equipamento:</small>
+                            <p class="mb-0 fw-bold">{{ pacote.tipo_equipamento|replace('_', ' ')|title }}</p>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <small class="text-muted">Impressão:</small>
+                            <p class="mb-0 fw-bold">{{ pacote.tipo_impressao|title }}</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Contrato:</small>
+                            <p class="mb-0 fw-bold">{{ pacote.periodo_contrato|title }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if pacote.total > 0 %}
+                    <div class="border-top pt-3">
+                        <h5 class="text-primary-custom">R$ {{ "%.2f"|format(pacote.total) }}</h5>
+                        <small class="text-muted">Proposta enviada</small>
+                    </div>
+                    {% endif %}
+                    
+                    {% if pacote.observacoes_admin %}
+                    <div class="mt-3 p-3 bg-light rounded">
+                        <h6><i class="fas fa-comment me-2"></i>Observações da Equipe:</h6>
+                        <p class="mb-0">{{ pacote.observacoes_admin }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-muted">
+                    <small>Solicitado em: {{ pacote.created_at.strftime('%d/%m/%Y %H:%M') if pacote.created_at else 'Data não disponível' }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-cube fa-4x text-muted mb-3"></i>
+        <h4 class="text-muted">Nenhum pacote solicitado</h4>
+        <p class="text-muted">Solicite seu primeiro pacote personalizado para receber uma proposta.</p>
+        <a href="{{ url_for('solicitar_pacote') }}" class="btn btn-primary-custom">
+            <i class="fas fa-plus me-1"></i> Solicitar Pacote
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

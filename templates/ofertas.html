@@ -1,0 +1,199 @@
+ {% extends "base.html" %}
+
+{% block title %}Ofertas - TechOutsourcing{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-primary-custom">Ofertas Especiais</h2>
+            <p class="text-muted">Aproveite nossos descontos por tempo limitado</p>
+        </div>
+
+        <div class="row g-4">
+            {% for produto in produtos %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card product-card h-100">
+                    <span class="offer-badge badge bg-secondary-custom">Oferta</span>
+                    <div class="product-image">
+                        <img src="{{ produto.imagem_url }}" class="card-img-top" alt="{{ produto.nome }}"
+                             onerror="this.src='https://via.placeholder.com/300x200?text=Imagem+Não+Encontrada'">
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ produto.nome }}</h5>
+                        
+                        <!-- PREÇO COM DESCONTO VISÍVEL (apenas ofertas) -->
+                        {% if produto.em_oferta and produto.preco > 0 %}
+                        <div class="product-price mb-2">
+                            <span class="text-muted text-decoration-line-through me-2">R$ {{ "%.2f"|format(produto.preco * 1.2) }}</span>
+                            <span class="fw-bold text-primary-custom fs-4">R$ {{ "%.2f"|format(produto.preco) }}</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="badge bg-success">
+                                <i class="fas fa-percentage me-1"></i> 20% OFF
+                            </span>
+                        </div>
+                        {% else %}
+                        <div class="mb-2">
+                            <small class="text-muted">Preço sob consulta</small>
+                        </div>
+                        {% endif %}
+                        
+                        <p class="card-text text-muted flex-grow-1">{{ produto.descricao }}</p>
+                        
+                        {% if produto.caracteristicas %}
+                        <ul class="list-unstyled small mb-3">
+                            {% for caracteristica in produto.caracteristicas.split('|') %}
+                            <li class="mb-1"><i class="fas fa-check text-secondary-custom me-1"></i> {{ caracteristica }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        
+                        <div class="product-actions mt-auto">
+                            <button class="btn btn-secondary-custom btn-sm w-100 mb-2" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#contactModal">
+                                <i class="fas fa-headset me-1"></i> Falar com vendedor
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm w-100" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#produtoModal{{ produto.id }}">
+                                <i class="fas fa-info-circle me-1"></i> Detalhes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Detalhes -->
+            <div class="modal fade" id="produtoModal{{ produto.id }}" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ produto.nome }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <img src="{{ produto.imagem_url }}" class="img-fluid rounded" alt="{{ produto.nome }}"
+                                         onerror="this.src='https://via.placeholder.com/500x300?text=Imagem+Não+Encontrada'">
+                                </div>
+                                <div class="col-md-6">
+                                    <!-- PREÇO COM DESCONTO NO MODAL -->
+                                    {% if produto.em_oferta and produto.preco > 0 %}
+                                    <div class="product-price mb-3">
+                                        <span class="text-muted text-decoration-line-through me-2">R$ {{ "%.2f"|format(produto.preco * 1.2) }}</span>
+                                        <span class="fw-bold text-primary-custom fs-3">R$ {{ "%.2f"|format(produto.preco) }}</span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <span class="badge bg-success fs-6">
+                                            <i class="fas fa-bolt me-1"></i> OFERTA ESPECIAL - 20% DE DESCONTO
+                                        </span>
+                                    </div>
+                                    {% else %}
+                                    <h6 class="text-muted mb-3">Preço sob consulta</h6>
+                                    {% endif %}
+                                    
+                                    <p class="text-muted">{{ produto.descricao }}</p>
+                                    
+                                    {% if produto.caracteristicas %}
+                                    <h6>Características:</h6>
+                                    <ul class="list-unstyled">
+                                        {% for caracteristica in produto.caracteristicas.split('|') %}
+                                        <li><i class="fas fa-check text-success me-2"></i>{{ caracteristica }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
+                                    
+                                    <!-- Informação de oferta -->
+                                    <div class="mt-4 p-3 bg-warning bg-opacity-10 rounded">
+                                        <h6><i class="fas fa-clock text-warning me-2"></i>Oferta por tempo limitado!</h6>
+                                        <p class="small mb-0">Esta promoção é válida apenas por tempo determinado. Aproveite enquanto dura!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#contactModal">
+                                <i class="fas fa-headset me-1"></i> Falar com vendedor
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-tag fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">Nenhuma oferta disponível no momento</h4>
+                <p class="text-muted">Volte em breve para conferir nossas promoções.</p>
+                {% if current_user.is_authenticated and current_user.is_admin %}
+                <a href="{{ url_for('admin') }}" class="btn btn-primary-custom mt-3">
+                    <i class="fas fa-cog me-1"></i> Gerenciar Ofertas
+                </a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Informação sobre ofertas -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="alert alert-warning">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                        <div>
+                            <h6 class="mb-1">Atenção: Ofertas por tempo limitado</h6>
+                            <p class="mb-0">Todas as ofertas nesta página têm validade determinada. Entre em contato com nossos vendedores 
+                            para confirmar disponibilidade e condições especiais.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Contar ofertas
+        const ofertasCount = {{ produtos|length }};
+        
+        if (ofertasCount === 0) {
+            console.log('Nenhuma oferta encontrada no banco de dados');
+        } else {
+            console.log(`Carregadas ${ofertasCount} ofertas especiais`);
+            
+            // Destacar produtos com oferta
+            const offerBadges = document.querySelectorAll('.offer-badge');
+            offerBadges.forEach(badge => {
+                badge.style.animation = 'pulse 2s infinite';
+            });
+        }
+
+        // Adicionar estilo de animação para as ofertas
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+                100% { transform: scale(1); }
+            }
+            .product-card:hover .offer-badge {
+                animation: none;
+                transform: scale(1.2);
+                transition: transform 0.3s ease;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Focar nos modais quando abertos
+        $('.modal').on('shown.bs.modal', function () {
+            $(this).find('button').first().focus();
+        });
+    });
+</script>
+{% endblock %}

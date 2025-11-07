@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Solicitar Pacote Personalizado - TechOutsourcing{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary-custom text-white">
+                    <h4 class="mb-0"><i class="fas fa-cube me-2"></i>Solicitar Pacote Personalizado</h4>
+                </div>
+                <div class="card-body p-4">
+                    <p class="text-muted mb-4">Preencha as informações abaixo para receber uma proposta personalizada de equipamentos e serviços.</p>
+                    
+                    <form method="POST" action="{{ url_for('solicitar_pacote') }}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="volume_folhas" class="form-label">Volume Mensal de Folhas *</label>
+                                    <select class="form-select" id="volume_folhas" name="volume_folhas" required>
+                                        <option value="">Selecione o volume</option>
+                                        <option value="1000-5000">1.000 - 5.000 folhas/mês</option>
+                                        <option value="5000-10000">5.000 - 10.000 folhas/mês</option>
+                                        <option value="10000-20000">10.000 - 20.000 folhas/mês</option>
+                                        <option value="20000-50000">20.000 - 50.000 folhas/mês</option>
+                                        <option value="50000+">Acima de 50.000 folhas/mês</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tipo_equipamento" class="form-label">Tipo de Equipamento *</label>
+                                    <select class="form-select" id="tipo_equipamento" name="tipo_equipamento" required>
+                                        <option value="">Selecione o equipamento</option>
+                                        <option value="impressora_laser">Impressora Laser</option>
+                                        <option value="multifuncional_laser">Multifuncional Laser</option>
+                                        <option value="scanner">Scanner Documental</option>
+                                        <option value="combinado">Combinação de Equipamentos</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tipo_impressao" class="form-label">Tipo de Impressão *</label>
+                                    <select class="form-select" id="tipo_impressao" name="tipo_impressao" required>
+                                        <option value="">Selecione o tipo</option>
+                                        <option value="monocromatica">Monocromática (Preto e Branco)</option>
+                                        <option value="colorida">Colorida</option>
+                                        <option value="ambos">Ambos (Mono + Color)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="periodo_contrato" class="form-label">Período do Contrato *</label>
+                                    <select class="form-select" id="periodo_contrato" name="periodo_contrato" required>
+                                        <option value="">Selecione o período</option>
+                                        <option value="mensal">Mensal</option>
+                                        <option value="trimestral">Trimestral</option>
+                                        <option value="anual">Anual (10% de desconto)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="observacoes" class="form-label">Observações Adicionais</label>
+                            <textarea class="form-control" id="observacoes" name="observacoes" rows="4" 
+                                      placeholder="Informações adicionais sobre suas necessidades, tipo de documentos, quantidade de usuários, etc."></textarea>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Como funciona:</h6>
+                            <ul class="mb-0">
+                                <li>Nossa equipe analisará suas necessidades</li>
+                                <li>Entraremos em contato em até 24h</li>
+                                <li>Receba uma proposta personalizada</li>
+                                <li>Sem compromisso inicial</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Voltar
+                            </a>
+                            <button type="submit" class="btn btn-primary-custom">
+                                <i class="fas fa-paper-plane me-1"></i> Enviar Solicitação
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

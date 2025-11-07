@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Pacotes Personalizados - TechOutsourcing{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-primary-custom">Monte seu Pacote Personalizado</h2>
+            <p class="text-muted">Selecione os produtos que melhor atendem suas necessidades e ganhe descontos progressivos</p>
+        </div>
+        
+        <div class="package-builder bg-white rounded shadow-sm p-4">
+            <div class="package-steps row text-center mb-4">
+                <div class="col step active">
+                    <div class="step-number">1</div>
+                    <div class="step-text fw-bold">Selecionar Produtos</div>
+                </div>
+                <div class="col step">
+                    <div class="step-number">2</div>
+                    <div class="step-text fw-bold">Revisar Pacote</div>
+                </div>
+                <div class="col step">
+                    <div class="step-number">3</div>
+                    <div class="step-text fw-bold">Finalizar</div>
+                </div>
+            </div>
+
+            <!-- Categorias -->
+            <div class="mb-4">
+                <h5 class="fw-bold mb-3">Selecione os Produtos</h5>
+                
+                {% for categoria, produtos in produtos_por_categoria.items() %}
+                <div class="category-section mb-4">
+                    <h6 class="text-primary-custom mb-3">{{ categoria|title }}</h6>
+                    <div class="row g-3">
+                        {% for produto in produtos %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ produto.nome }}</h6>
+                                    <div class="product-price mb-2 fw-bold text-primary-custom">
+                                        R$ {{ "%.2f"|format(produto.preco) }}
+                                    </div>
+                                    <p class="card-text text-muted small">{{ produto.descricao[:100] }}...</p>
+                                    <div class="form-check">
+                                        <input class="form-check-input produto-checkbox" type="checkbox" 
+                                               value="{{ produto.id }}" id="produto{{ produto.id }}">
+                                        <label class="form-check-label small" for="produto{{ produto.id }}">
+                                            Adicionar ao pacote
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Resumo do Pacote -->
+            <div class="package-summary card p-4 mt-4" id="package-summary" style="display: none;">
+                <h5 class="fw-bold mb-3">Resumo do Pacote</h5>
+                <div class="summary-items mb-3" id="summary-items">
+                    <!-- Itens serão adicionados dinamicamente -->
+                </div>
+                <div class="summary-total fw-bold fs-5 text-primary-custom" id="summary-total">
+                    Total: R$ 0,00
+                </div>
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary-custom btn-lg" id="finalize-package">
+                        Finalizar Pacote
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let produtosSelecionados = [];
+    const produtosData = {};
+
+    // Preencher dados dos produtos
+    {% for categoria, produtos in produtos_por_categoria.items() %}
+        {% for produto in produtos %}
+            produtosData[{{ produto.id }}] = {
+                id: {{ produto.id }},
+                nome: "{{ produto.nome }}",
+                preco: {{ produto.preco }},
+                categoria: "{{ produto.categoria }}"
+            };
+        {% endfor %}
+    {% endfor %}
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.produto-checkbox');
+        const summary = document.getElementById('package-summary');
+        const summaryItems = document.getElementById('summary-items');
+        const summaryTotal = document.getElementById('summary-total');
+        const finalizeBtn = document.getElementById('finalize-package');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const produtoId = parseInt(this.value);
+                
+                if (this.checked) {
+                    produtosSelecionados.push(produtoId);
+                } else {
+                    produtosSelecionados = produtosSelecionados.filter(id => id !== produtoId);
+                }
+                
+                atualizarResumo();
+            });
+        });
+
+        finalizeBtn.addEventListener('click', function() {
+            if (produtosSelecionados.length === 0) {
+                alert('Selecione pelo menos um produto para criar o pacote.');
+                return;
+            }
+
+            fetch('{{ url_for("adicionar_pacote") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    produtos: produtosSelecionados
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Pacote criado com sucesso! Total: R$ ' + data.total.toFixed(2) + 
+                          ' (Desconto: ' + data.desconto + '%)');
+                    // Limpar seleção
+                    checkboxes.forEach(cb => cb.checked = false);
+                    produtosSelecionados = [];
+                    atualizarResumo();
+                } else {
+                    alert('Erro ao criar pacote: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao processar o pacote.');
+            });
+        });
+
+        function atualizarResumo() {
+            summaryItems.innerHTML = '';
+            let total = 0;
+
+            produtosSelecionados.forEach(produtoId => {
+                const produto = produtosData[produtoId];
+                if (produto) {
+                    total += produto.preco;
+                    
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'd-flex justify-content-between py-2 border-bottom';
+                    itemElement.innerHTML = `
+                        <span>${produto.nome}</span>
+                        <span>R$ ${produto.preco.toFixed(2)}</span>
+                    `;
+                    summaryItems.appendChild(itemElement);
+                }
+            });
+
+            // Aplicar desconto progressivo
+            let desconto = 0;
+            if (produtosSelecionados.length >= 3) desconto = 0.1;
+            if (produtosSelecionados.length >= 5) desconto = 0.15;
+            if (produtosSelecionados.length >= 7) desconto = 0.2;
+
+            const descontoValor = total * desconto;
+            const totalFinal = total - descontoValor;
+
+            summaryTotal.innerHTML = `
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span>Subtotal:</span>
+                    <span>R$ ${total.toFixed(2)}</span>
+                </div>
+                ${desconto > 0 ? `
+                <div class="d-flex justify-content-between py-2 border-bottom text-success">
+                    <span>Desconto (${(desconto * 100).toFixed(0)}%):</span>
+                    <span>-R$ ${descontoValor.toFixed(2)}</span>
+                </div>
+                ` : ''}
+                <div class="d-flex justify-content-between py-2 fw-bold">
+                    <span>Total:</span>
+                    <span>R$ ${totalFinal.toFixed(2)}</span>
+                </div>
+            `;
+
+            // Mostrar/ocultar resumo
+            if (produtosSelecionados.length > 0) {
+                summary.style.display = 'block';
+            } else {
+                summary.style.display = 'none';
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Login - TechOutsourcing{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-header bg-primary-custom text-white text-center py-4">
+                    <h4 class="mb-0"><i class="fas fa-sign-in-alt me-2"></i>Entrar</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('login') }}">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Senha</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary-custom w-100 py-2">
+                            <i class="fas fa-sign-in-alt me-2"></i>Entrar
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <p class="text-muted">Não tem uma conta? 
+                            <a href="{{ url_for('registro') }}" class="text-primary-custom text-decoration-none">
+                                Cadastre-se aqui
+                            </a>
+                        </p>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="text-center mb-3">Acesso Administrativo</h6>
+                        <div class="small text-muted">
+                            <p class="mb-1"><strong>E-mail:</strong> admin@techoutsourcing.com.br</p>
+                            <p class="mb-0"><strong>Senha:</strong> admin123</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

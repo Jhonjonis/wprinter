@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TechOutsourcing{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0056b3;
+            --secondary: #ff6b00;
+        }
+        
+        .bg-primary-custom { background-color: var(--primary) !important; }
+        .btn-primary-custom { background-color: var(--primary); border-color: var(--primary); }
+        .btn-secondary-custom { background-color: var(--secondary); border-color: var(--secondary); }
+        .text-primary-custom { color: var(--primary) !important; }
+        .text-secondary-custom { color: var(--secondary) !important; }
+        
+        .product-card { transition: transform 0.3s; height: 100%; }
+        .product-card:hover { transform: translateY(-5px); }
+        .product-image { height: 200px; overflow: hidden; }
+        .product-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .product-card:hover .product-image img { transform: scale(1.05); }
+        
+        .offer-badge { position: absolute; top: 10px; right: 10px; z-index: 10; }
+        .admin-controls { position: absolute; top: 10px; left: 10px; z-index: 10; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="bg-primary-custom text-white py-2">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center flex-column flex-md-row">
+                    <div class="contact-info mb-2 mb-md-0">
+                        <span class="me-3"><i class="fas fa-phone me-1"></i> (48) 3222-0000</span>
+                        <span><i class="fas fa-envelope me-1"></i> contato@techoutsourcing.com.br</span>
+                    </div>
+                    <div class="user-actions">
+                        {% if current_user.is_authenticated %}
+                            <span class="me-3">Olá, {{ current_user.name }}!</span>
+                            {% if current_user.is_admin %}
+                                <a href="{{ url_for('admin') }}" class="text-white text-decoration-none me-3">
+                                    <i class="fas fa-cog me-1"></i> Admin
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('pacotes') }}" class="text-white text-decoration-none me-3">
+                                    <i class="fas fa-cube me-1"></i> Meus Pacotes
+                                </a>
+                            {% endif %}
+                            <a href="{{ url_for('logout') }}" class="text-white text-decoration-none me-3">
+                                <i class="fas fa-sign-out-alt me-1"></i> Sair
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('login') }}" class="text-white text-decoration-none me-3">
+                                <i class="fas fa-user me-1"></i> Entrar
+                            </a>
+                            <a href="{{ url_for('registro') }}" class="text-white text-decoration-none me-3">
+                                <i class="fas fa-user-plus me-1"></i> Registrar
+                            </a>
+                        {% endif %}
+                        <a href="#" class="text-white text-decoration-none">
+                            <i class="fas fa-question-circle me-1"></i> Ajuda
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white py-3 shadow-sm">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center flex-column flex-md-row">
+                    <div class="logo d-flex align-items-center mb-3 mb-md-0">
+                        <img src="https://via.placeholder.com/50" alt="TechOutsourcing" class="me-2">
+                        <h1 class="h4 mb-0 text-primary-custom">TechOutsourcing</h1>
+                    </div>
+                    
+                    <div class="search-bar flex-grow-1 mx-0 mx-md-3 mb-3 mb-md-0" style="max-width: 500px;">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Pesquisar produtos...">
+                            <button class="btn btn-primary-custom" type="button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="cart-icon position-relative">
+                        <i class="fas fa-shopping-cart fs-4 text-primary-custom"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary-custom">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary-custom">
+            <div class="container">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('index') }}">Início</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                Produtos
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ url_for('produtos') }}?categoria=impressoras">Impressoras</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('produtos') }}?categoria=scanners">Scanners</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('produtos') }}?categoria=multifuncionais">Multifuncionais</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('produtos') }}?categoria=consumiveis">Consumíveis</a></li>
+                            </ul>
+                        </li>
+                      <li class="nav-item">
+    {% if current_user.is_authenticated %}
+        {% if current_user.is_admin %}
+            <a class="nav-link" href="{{ url_for('admin') }}">Gerenciar Pacotes</a>
+        {% else %}
+            <a class="nav-link" href="{{ url_for('pacotes') }}">Criar Pacote</a>
+        {% endif %}
+    {% else %}
+        <a class="nav-link" href="{{ url_for('login') }}">Pacotes Personalizados</a>
+    {% endif %}
+</li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#contactModal">
+                                <i class="fas fa-headset me-1"></i> Suporte
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Flash Messages -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Modal de Contato -->
+    <div class="modal fade" id="contactModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary-custom text-white">
+                    <h5 class="modal-title">Fale Conosco</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-headset fa-3x text-primary-custom mb-3"></i>
+                        <h5>Suporte Técnico</h5>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <i class="fas fa-phone text-primary-custom me-2"></i>
+                            <strong>(48) 3222-0000</strong>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <i class="fas fa-whatsapp text-success me-2"></i>
+                            <strong>(48) 99999-9999</strong>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <i class="fas fa-envelope text-primary-custom me-2"></i>
+                            <strong>suporte@techoutsourcing.com.br</strong>
+                        </div>
+                        <div class="col-12">
+                            <i class="fas fa-clock text-primary-custom me-2"></i>
+                            <strong>Segunda a Sexta: 8h às 18h</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 mt-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5 class="text-secondary-custom mb-3">TechOutsourcing</h5>
+                    <p>Especialistas em soluções de impressão e digitalização para empresas de todos os tamanhos. Oferecemos equipamentos de alta qualidade e pacotes personalizados.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <h5 class="text-secondary-custom mb-3">Produtos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('produtos') }}?categoria=impressoras" class="text-white text-decoration-none">Impressoras</a></li>
+                        <li><a href="{{ url_for('produtos') }}?categoria=scanners" class="text-white text-decoration-none">Scanners</a></li>
+                        <li><a href="{{ url_for('produtos') }}?categoria=multifuncionais" class="text-white text-decoration-none">Multifuncionais</a></li>
+                        <li><a href="{{ url_for('produtos') }}?categoria=consumiveis" class="text-white text-decoration-none">Consumíveis</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h5 class="text-secondary-custom mb-3">Serviços</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('ofertas') }}" class="text-white text-decoration-none">Ofertas Especiais</a></li>
+                        {% if current_user.is_authenticated %}
+                            {% if current_user.is_admin %}
+                                <li><a href="{{ url_for('admin') }}" class="text-white text-decoration-none">Gerenciar Produtos</a></li>
+                            {% else %}
+                                <li><a href="{{ url_for('pacotes') }}" class="text-white text-decoration-none">Criar Pacote</a></li>
+                            {% endif %}
+                        {% else %}
+                            <li><a href="{{ url_for('login') }}" class="text-white text-decoration-none">Pacotes Personalizados</a></li>
+                        {% endif %}
+                        <li><a href="#" class="text-white text-decoration-none" data-bs-toggle="modal" data-bs-target="#contactModal">Suporte Técnico</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h5 class="text-secondary-custom mb-3">Contato</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-map-marker-alt me-2"></i> Rua das Impressoras, 123 - Centro</li>
+                        <li><i class="fas fa-phone me-2"></i> (48) 3222-0000</li>
+                        <li><i class="fas fa-whatsapp me-2"></i> (48) 99999-9999</li>
+                        <li><i class="fas fa-envelope me-2"></i> contato@techoutsourcing.com.br</li>
+                        <li><i class="fas fa-clock me-2"></i> Seg-Sex: 8h-18h</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-top border-secondary mt-4 pt-3 text-center text-muted">
+                <p>&copy; 2023 TechOutsourcing - Todos os direitos reservados</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
