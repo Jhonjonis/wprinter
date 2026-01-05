@@ -1,45 +1,44 @@
+feat: WPrinter — sistema de outsourcing de impressão
 
-
-🖨️ WPrinter — Sistema de Vendas e Aluguel de Equipamentos de Impressão
+🖨️ WPrinter — Sistema de Outsourcing de Impressão
 
 🎯 Objetivo do Projeto
-- Sistema desenvolvido para gerenciar a venda e locação de impressoras,
-  scanners e utilitários de impressão
-- Facilita o controle comercial, operacional e administrativo
-- Voltado para empresas de outsourcing, assistência técnica e soluções de impressão
+- Sistema desenvolvido para gestão de outsourcing de impressão,
+  abrangendo venda e locação de impressoras, scanners e utilitários
+- Centraliza o controle comercial, operacional e contratual
+- Voltado para empresas de outsourcing de impressão e soluções corporativas
 
 ---
 
 🧩 Visão Geral da Arquitetura
 - Sistema web com separação entre front-end e regras de negócio
-- Back-end responsável pelo processamento de dados comerciais e operacionais
-- Integração com banco de dados para controle de contratos, clientes e equipamentos
+- Back-end responsável pelo gerenciamento de contratos, clientes e equipamentos
+- Integração com banco de dados para persistência das informações
 
 ---
 
 ⚙️ Funcionalidades
-- Cadastro de clientes (pessoa física e jurídica)
-- Venda de impressoras, scanners e utilitários de impressão
-- Locação de equipamentos com controle de contratos
-- Gerenciamento de equipamentos disponíveis e alugados
-- Controle de status dos equipamentos (ativo, em uso, manutenção)
-- Registro de datas, prazos e valores de locação
-- Painel administrativo para gestão comercial
-- Histórico de vendas e contratos
+- Cadastro de clientes (PF e PJ)
+- Gestão de contratos de outsourcing de impressão
+- Venda e locação de impressoras, scanners e utilitários de impressão
+- Controle de equipamentos disponíveis, alugados e em manutenção
+- Registro de prazos, valores e vigência contratual
+- Painel administrativo para gestão comercial e operacional
+- Histórico de vendas, locações e contratos
 
 ---
 
 🖥️ Interface e Uso
-- Interface web simples e intuitiva
-- Fluxos claros para vendas, locações e gestão de equipamentos
-- Foco em produtividade e facilidade de uso
+- Interface web intuitiva e responsiva
+- Fluxos claros para gestão de clientes, contratos e equipamentos
+- Foco em produtividade e eficiência operacional
 
 ---
 
 🔌 Integrações
 - Banco de dados relacional
 - Módulo de contratos e faturamento
-- Serviços de impressão e digitalização (apoio operacional)
+- Serviços e utilitários de impressão (apoio operacional)
 
 ---
 
@@ -47,7 +46,7 @@
 - Front-End Web
 - Back-End com API
 - Banco de dados relacional
-- Integração com serviços de impressão
+- Integrações com serviços corporativos
 
 ---
 
@@ -60,6 +59,6 @@
 ---
 
 🚀 Considerações Finais
-O WPrinter centraliza a gestão de vendas e locação de equipamentos
-de impressão, proporcionando organização, controle e eficiência
-nos processos comerciais e operacionais.
+O WPrinter oferece uma solução completa para outsourcing de impressão,
+otimizando a gestão comercial e operacional, garantindo controle,
+organização e escalabilidade para empresas do setor.
