@@ -54,7 +54,7 @@ feat: WPrinter — sistema de outsourcing de impressão
 - Controle de acesso por níveis de usuário
 - Proteção de dados sensíveis de clientes
 - Validação de dados de entrada
-- Sessões protegidas
+- Sessões protegidas.
 
 ---
 
